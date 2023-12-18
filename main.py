@@ -10,7 +10,7 @@ class Candy(pygame.sprite.Sprite):
         self.rect.center=(x,y)
         self.ropes=[]
         self.mass=1
-        self.viscosity=0.4
+        self.viscosity=0.09
         self.velocity=np.array([0,0])
         self.pos=np.array(self.rect.center)*SCALE
     def update(self):
@@ -32,6 +32,8 @@ class Candy(pygame.sprite.Sprite):
         self.rect.center=(self.pos[0]/SCALE,self.pos[1]/SCALE)
     def bind(self,pin_pos,length):
         rope=Rope(pin_pos,length,self)
+        pin=Pin(pin_pos)
+        pins.add(pin)
         self.ropes.append(rope)
     def draw_vectors(self):
         force=self.mass*G
@@ -64,12 +66,11 @@ class Rope:
         pygame.draw.line(screen,(0,0,0),self.one_end,self.candy.rect.center,width=3)
         
 class Pin(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.Surface((20,20))
-        self.image.fill((0,0,0))
+        self.image = pygame.transform.scale(candy_img, ((10,10)))
         self.rect=self.image.get_rect()
-        self.rect.center=(x,y)
+        self.rect.center=pos
 def draw_text(text,c,size,color=(0,0,0)):
     font=pygame.font.Font(pygame.font.match_font('arial'),size)
     text_surface=font.render(text,True,color)
@@ -98,12 +99,14 @@ pygame.init()
 running=True
 screen=pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Это и есть амням')
+candies=pygame.sprite.Group()
+pins=pygame.sprite.Group()
+pin_img=pygame.image.load('pin.png')
 candy_img=pygame.image.load('candy.png').convert()
 background=pygame.image.load('background.png').convert()
 background=pygame.transform.scale(background, ((WIDTH,HEIGHT)))
 candy=Candy(WIDTH/2-30,HEIGHT/2-40)
 candy.bind((WIDTH/2+70,HEIGHT/2+70),250)
-candies=pygame.sprite.Group()
 candies.add(candy)
 clock=pygame.time.Clock()
 while running:
@@ -117,6 +120,7 @@ while running:
     candies.draw(screen)
     for rope in candy.ropes:
         rope.draw()
+    pins.draw(screen)
     #candy.draw_vectors()
     pygame.display.flip()
 pygame.quit()
