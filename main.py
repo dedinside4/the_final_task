@@ -163,22 +163,25 @@ candy.bind((WIDTH/2+100,HEIGHT/2+40),170)
 candies.add(candy)
 clock=pygame.time.Clock()
 Roukanken=False
+last_pos=(None,None)
 while running:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running=False
         if Roukanken:
-            dx,dy=pygame.mouse.get_rel()
-            x2,y2=pygame.mouse.get_pos()
-            x1,y1=x2-dx,y2-dy
+            x,y=pygame.mouse.get_pos()
+            x1,y1=last_pos
             #print(x1,y1,x2,y2)
-            for rope in candy.ropes:
-                rope.CUT_THROUGH_THE_ROPE(x1*SCALE,y1*SCALE,x2*SCALE,y2*SCALE)
+            if not(x1 is None): 
+                for rope in candy.ropes:
+                    rope.CUT_THROUGH_THE_ROPE(x1*SCALE,y1*SCALE,x*SCALE,y*SCALE)
+            last_pos=x,y
         if event.type == pygame.MOUSEBUTTONDOWN:
             Roukanken=True
         if event.type == pygame.MOUSEBUTTONUP:
-            Roukanken=False  
+            Roukanken=False
+            last_pos=(None,None) 
     candies.update()
     screen.blit(background,(0,0))
     #draw_text(str(clock.get_fps()),(70,70),15)
