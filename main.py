@@ -26,9 +26,7 @@ class Candy(pygame.sprite.Sprite):
                 if f@self.velocity<0:
                     self.velocity-=(self.velocity@f)*f/(f_norm**2)
         force-=self.viscosity*self.velocity
-        #print(pos,'before')
         self.pos=self.pos+self.velocity*time+force*(time**2)/(2*self.mass)
-        #print(pos, 'after')
         self.velocity=self.velocity+force*time/self.mass
         self.rect.center=(self.pos[0]/SCALE,self.pos[1]/SCALE)
     def bind(self,pin_pos,length):
@@ -50,11 +48,27 @@ class Rope:
         self.static_end=np.array(static_end)*SCALE
         self.one_end=static_end
         self.resilience=200
-        #self.count=300
-        #self.elements=np.array([[x1+i*(x2-x1)/(self.count-1),y1+i*(y2-y1)/(self.count-1)] for i in range(self.count)])
-        #self.velocities=np.array([[0,0]]*self.count)
-        #self.l=np.sqrt(((x2-x1)/(self.count-1))**2+((y2-y1)/(self.count-1))**2)
-        #self.last_update=pygame.time.get_ticks()
+        self.a=None
+        self.b=None
+    def CUT_THROUGH_THE_ROPE(self,x1,y1,x2,y2):
+        beheaded=False
+        candy_end=self.candy.pos
+        r=candy_end-self.static_end
+        x1-=self.static_end[0]
+        x2-=self.static_end[0]
+        y1-=self.static_end[1]
+        y2-=self.static_end[1]
+        if self.length-np.linalg.norm(r)<=self.length*0.001:
+            k=r[1]/r[0]
+            if (k*x1-y1)*(k*x2-y2)<0:
+                beheaded=True
+        elif not (self.a is None):
+            if (self.a*x1**2+self.b*x1-y1)*(self.a*x2**2+self.b*x2-y2)<0:
+                beheaded=True
+        if beheaded:
+            self.kill_kill_kill()
+    def kill_kill_kill(self):
+        self.candy.ropes.remove(self)
     def take_force(self):
         candy_end=self.candy.pos
         l=self.static_end-candy_end
@@ -65,16 +79,19 @@ class Rope:
         return np.array([0,0])
     def draw(self):
         candy_end=self.candy.pos
-        if self.length-np.linalg.norm(self.static_end-candy_end)>self.length*0.001:
+        if self.length-np.linalg.norm(self.static_end-candy_end)>self.length*0.004:
             self.draw_unstreched(candy_end)
         else:     
             pygame.draw.line(screen,(0,0,0),self.one_end,self.candy.rect.center,width=2)
     def draw_unstreched(self,candy_end):
-        a=-abs(root_scalar(self.find_coeffs,args=(candy_end),x0=1,x1=3).root)
+        res=root_scalar(self.find_coeffs,args=(candy_end),x0=1,x1=3,rtol=0.00001)
+        a=-abs(res.root)
         r=-self.static_end+candy_end
         x2,y2=r[0],r[1]
         b=(y2-a*x2**2)/x2
         self.draw_parabole(a,b,x2,y2)
+        self.a=a
+        self.b=b
     def draw_parabole(self,a,b,x2,y2):
         x_0,y_0=self.one_end
         for x in np.linspace(0,x2,1000):
@@ -86,13 +103,18 @@ class Rope:
         r=-self.static_end+candy_end
         x2,y2=r[0],r[1]
         b=(y2-a*x2**2)/x2
-        L=self.integral(0,a,b)-self.integral(x2,a,b)
+        if x2<0:
+            L=self.integral(0,a,b)-self.integral(x2,a,b)
+        else:
+            L=-self.integral(0,a,b)+self.integral(x2,a,b)
         return L-self.length
     def integral(self,x,a,b):
         t=(2*a*x+b)
-        s=b*np.sqrt(t**2+1)/(4*a)
-        s+=(x/2)*np.sqrt(t**2+1)
-        s+=np.log(np.sqrt(t**2+1)+t)/(4*a)
+##        s=b*np.sqrt(t**2+1)/(4*a)
+##        s+=(x/2)*np.sqrt(t**2+1)
+##        s+=np.log(np.sqrt(t**2+1)+t)/(4*a)
+        s=np.sqrt(t**2+1)*t+np.arcsinh(t)
+        s/=4*a
         return s
         
 class Pin(pygame.sprite.Sprite):
@@ -136,14 +158,27 @@ candy_img=pygame.image.load('candy.png').convert()
 background=pygame.image.load('background.png').convert()
 background=pygame.transform.scale(background, ((WIDTH,HEIGHT)))
 candy=Candy(WIDTH/2-30,HEIGHT/2-40)
-candy.bind((WIDTH/2+70,HEIGHT/2+70),250)
+candy.bind((WIDTH/2+70,HEIGHT/2+70),280)
+candy.bind((WIDTH/2+100,HEIGHT/2+40),170)
 candies.add(candy)
 clock=pygame.time.Clock()
+Roukanken=False
 while running:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running=False
+        if Roukanken:
+            dx,dy=pygame.mouse.get_rel()
+            x2,y2=pygame.mouse.get_pos()
+            x1,y1=x2-dx,y2-dy
+            #print(x1,y1,x2,y2)
+            for rope in candy.ropes:
+                rope.CUT_THROUGH_THE_ROPE(x1*SCALE,y1*SCALE,x2*SCALE,y2*SCALE)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            Roukanken=True
+        if event.type == pygame.MOUSEBUTTONUP:
+            Roukanken=False  
     candies.update()
     screen.blit(background,(0,0))
     #draw_text(str(clock.get_fps()),(70,70),15)
