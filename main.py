@@ -116,11 +116,25 @@ class Rope:
         s=np.sqrt(t**2+1)*t+np.arcsinh(t)
         s/=4*a
         return s
-        
+class Amnyam(pygame.sprite.Sprite):
+    def __init__(self,pos):
+        pygame.sprite.Sprite.__init__(self)                                    
+        self.image = pygame.transform.scale(amnyam_img, ((50,50)))
+        self.image.set_colorkey((255,255,255))
+        self.rect=self.image.get_rect()
+        self.rect.center=pos
+class Star(pygame.sprite.Sprite):
+    def __init__(self,pos):
+        pygame.sprite.Sprite.__init__(self)                                    
+        self.image = pygame.transform.scale(star_img, ((10,10)))
+        self.image.set_colorkey((255,255,255))
+        self.rect=self.image.get_rect()
+        self.rect.center=pos
 class Pin(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
         self.image = pygame.transform.scale(candy_img, ((10,10)))
+        self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
 def draw_text(text,c,size,color=(0,0,0)):
@@ -153,6 +167,10 @@ screen=pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Это и есть амням')
 candies=pygame.sprite.Group()
 pins=pygame.sprite.Group()
+stars=pygame.sprite.Group()
+amnyams=pygame.sprite.Group()
+amnyam_img=pygame.image.load('amnyam.png')
+star_img=pygame.image.load('star.png')
 pin_img=pygame.image.load('pin.png')
 candy_img=pygame.image.load('candy.png').convert()
 background=pygame.image.load('background.png').convert()
@@ -161,9 +179,18 @@ candy=Candy(WIDTH/2-30,HEIGHT/2-40)
 candy.bind((WIDTH/2+70,HEIGHT/2+70),280)
 candy.bind((WIDTH/2+100,HEIGHT/2+40),170)
 candies.add(candy)
+amnyam=Amnyam((WIDTH/2+190,HEIGHT/2+240))
+amnyams.add(amnyam)
+star=Star(((WIDTH/2+150,HEIGHT/2+210)))
+stars.add(star)
+star=Star(((WIDTH/2+100,HEIGHT/2+220)))
+stars.add(star)
+star=Star(((WIDTH/2+10,HEIGHT/2+170)))
+stars.add(star)
 clock=pygame.time.Clock()
 Roukanken=False
 last_pos=(None,None)
+all_stars=0
 while running:
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -172,24 +199,28 @@ while running:
         if Roukanken:
             x,y=pygame.mouse.get_pos()
             x1,y1=last_pos
-            #print(x1,y1,x2,y2)
-            if not(x1 is None): 
-                for rope in candy.ropes:
-                    rope.CUT_THROUGH_THE_ROPE(x1*SCALE,y1*SCALE,x*SCALE,y*SCALE)
+            if not(x1 is None):
+                for candy in candies.sprites():
+                    for rope in candy.ropes:
+                        rope.CUT_THROUGH_THE_ROPE(x1*SCALE,y1*SCALE,x*SCALE,y*SCALE)
             last_pos=x,y
         if event.type == pygame.MOUSEBUTTONDOWN:
             Roukanken=True
         if event.type == pygame.MOUSEBUTTONUP:
             Roukanken=False
-            last_pos=(None,None) 
+            last_pos=(None,None)
     candies.update()
+    pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(80/100))
+    all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
     screen.blit(background,(0,0))
     #draw_text(str(clock.get_fps()),(70,70),15)
+    stars.draw(screen)
     candies.draw(screen)
-    for rope in candy.ropes:
-        rope.draw()
+    for candy in candies.sprites():
+        for rope in candy.ropes:
+            rope.draw()
     pins.draw(screen)
-    #candy.draw_vectors()
+    amnyams.draw(screen)
     pygame.display.flip()
 pygame.quit()
 
