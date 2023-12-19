@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from scipy.optimize import root_scalar
 from model import *
 class Candy(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -63,7 +64,36 @@ class Rope:
             return force
         return np.array([0,0])
     def draw(self):
-        pygame.draw.line(screen,(0,0,0),self.one_end,self.candy.rect.center,width=3)
+        candy_end=self.candy.pos
+        if self.length-np.linalg.norm(self.static_end-candy_end)>self.length*0.001:
+            self.draw_unstreched(candy_end)
+        else:     
+            pygame.draw.line(screen,(0,0,0),self.one_end,self.candy.rect.center,width=2)
+    def draw_unstreched(self,candy_end):
+        a=-abs(root_scalar(self.find_coeffs,args=(candy_end),x0=1,x1=3).root)
+        r=-self.static_end+candy_end
+        x2,y2=r[0],r[1]
+        b=(y2-a*x2**2)/x2
+        self.draw_parabole(a,b,x2,y2)
+    def draw_parabole(self,a,b,x2,y2):
+        x_0,y_0=self.one_end
+        for x in np.linspace(0,x2,1000):
+            y=a*x**2+b*x
+            y_screen=y/SCALE
+            x_screen=x/SCALE
+            pygame.draw.circle(screen,(0,0,0),(x_0+x_screen,y_0+y_screen) ,1)
+    def find_coeffs(self,a,candy_end):
+        r=-self.static_end+candy_end
+        x2,y2=r[0],r[1]
+        b=(y2-a*x2**2)/x2
+        L=self.integral(0,a,b)-self.integral(x2,a,b)
+        return L-self.length
+    def integral(self,x,a,b):
+        t=(2*a*x+b)
+        s=b*np.sqrt(t**2+1)/(4*a)
+        s+=(x/2)*np.sqrt(t**2+1)
+        s+=np.log(np.sqrt(t**2+1)+t)/(4*a)
+        return s
         
 class Pin(pygame.sprite.Sprite):
     def __init__(self,pos):
@@ -116,7 +146,7 @@ while running:
             running=False
     candies.update()
     screen.blit(background,(0,0))
-    draw_text(str(clock.get_fps()),(70,70),15)
+    #draw_text(str(clock.get_fps()),(70,70),15)
     candies.draw(screen)
     for rope in candy.ropes:
         rope.draw()
