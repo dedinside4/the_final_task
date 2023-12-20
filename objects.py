@@ -25,11 +25,11 @@ class Candy(pygame.sprite.Sprite):
             f=rope.take_force()
             f_norm=np.linalg.norm(f)
             if f_norm>0:
-                force-=(force@f)*f/(f_norm**2)
+                force=force-(force@f)*f/(f_norm**2)
                 force+=f
                 if f@self.velocity<0:
-                    self.velocity-=(self.velocity@f)*f/(f_norm**2)
-        force-=self.viscosity*self.velocity
+                    self.velocity=self.velocity-(self.velocity@f)*f/(f_norm**2)
+        force=force-self.viscosity*self.velocity
         self.pos=self.pos+self.velocity*time+force*(time**2)/(2*self.mass)
         self.velocity=self.velocity+force*time/self.mass
         self.rect.center=(self.pos[0]/SCALE,self.pos[1]/SCALE)
@@ -63,9 +63,9 @@ class Rope:
         y1-=self.static_end[1]
         y2-=self.static_end[1]
         try:
-            k=(x1-x2)/(y1-y2)
+            k=(y1-y2)/(x1-x2)
         except:
-            k=random.choice((-1,1))*1000000
+            k=((x1-x2)*(y1-y2)/abs((x1-x2)*(y1-y2)))*1000000
         b=y2-k*x2
         if x1<min(x,0):
             x1=min(x,0)
@@ -156,17 +156,21 @@ class Pin(pygame.sprite.Sprite):
 class Bubble(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load('images/bubble.png'), ((30, 30)))
+        self.image = pygame.transform.scale(pygame.image.load('images/bubble.png'), ((55, 55)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
         self.candy=None
     def catch(self,candy):
         self.candy=candy
-        self.rect.center=self.candy.center
+        self.rect.center=candy.rect.center
         candy.g=np.array([0,0])
     def update(self):
         try:
-            self.candy.velocity=[0,-0.8]
+            self.candy.velocity=np.array([0,-1])
         except:
             pass
+    def pop(self,pos):
+        if self.rect.collidepoint(pos):
+            self.candy.g=np.array([0,9.8])
+            self.kill()

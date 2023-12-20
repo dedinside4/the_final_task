@@ -25,7 +25,7 @@ def read_level(name):
             elif object_type == "Bubble":
                 bubble=parse_bubble_parameters(line)
                 bubbles.add(bubble)
-    return candies,pins,stars,amnyams
+    return candies,pins,stars,amnyams,bubbles
 def parse_star_parameters(line):
     a=line.split()
     pos=eval(a[1])

@@ -32,15 +32,23 @@ def start_level(number):
                 last_pos=x,y
             if event.type == pygame.MOUSEBUTTONDOWN:
                 Roukanken=True
+                for bubble in bubbles.sprites():
+                    bubble.pop(event.pos)
             if event.type == pygame.MOUSEBUTTONUP:
                 Roukanken=False
                 last_pos=(None,None)
         bubbles.update()
         candies.update()
         pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(60/100))
+        catches=pygame.sprite.groupcollide(bubbles, candies, False, False)
+        for bubble in catches:
+            for candy in catches[bubble]:
+                bubble.catch(candy)
         all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
         screen.blit(level_background,(0,0))
         for candy in candies.sprites():
+            if candy.rect.centerx<0 or candy.rect.centerx>WIDTH or candy.rect.centery<0 or candy.rect.centery>HEIGHT:
+                candy.kill()
             for rope in candy.ropes:
                 rope.draw(screen)
         stars.draw(screen)
@@ -62,9 +70,7 @@ level_background=pygame.transform.scale(level_background, ((WIDTH,HEIGHT)))
 menu_background=pygame.image.load('images/menu_background.png').convert()
 menu_background=pygame.transform.scale(menu_background, ((WIDTH,HEIGHT)))
 clock=pygame.time.Clock()
-Roukanken=False
-last_pos=(None,None)
-all_stars=0
+start_level(1)
 while running:
     clock.tick(FPS)
     for event in pygame.event.get():
