@@ -62,11 +62,11 @@ while running:
     pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(80/100))
     all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
     screen.blit(background,(0,0))
-    stars.draw(screen)
-    candies.draw(screen)
     for candy in candies.sprites():
         for rope in candy.ropes:
             rope.draw(screen)
+    stars.draw(screen)
+    candies.draw(screen)
     pins.draw(screen)
     amnyams.draw(screen)
     pygame.display.flip()

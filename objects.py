@@ -31,11 +31,10 @@ class Candy(pygame.sprite.Sprite):
         self.pos=self.pos+self.velocity*time+force*(time**2)/(2*self.mass)
         self.velocity=self.velocity+force*time/self.mass
         self.rect.center=(self.pos[0]/SCALE,self.pos[1]/SCALE)
-    def bind(self,pin_pos,length):
-        rope=Rope(pin_pos,length,self)
-        pin=Pin(pin_pos)
+    def bind(self,pin,length):
+        rope=Rope(pin.rect.center,length,self)
         self.ropes.append(rope)
-        return pin
+        pin.bound=(self,rope)
     def draw_vectors(self):
         force=self.mass*G
         for rope in self.ropes:
@@ -125,7 +124,7 @@ class Amnyam(pygame.sprite.Sprite):
 class Star(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('star.png'), ((10,10)))
+        self.image = pygame.transform.scale(pygame.image.load('star.png'), ((18,18)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
@@ -136,3 +135,4 @@ class Pin(pygame.sprite.Sprite):
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
+        self.bound=None
