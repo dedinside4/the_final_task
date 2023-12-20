@@ -25,6 +25,9 @@ def place_amnyam(pos):
 def place_star(pos):
     star=Star(pos)
     all_sprites.add(star)
+def place_bubble(pos):
+    bubble=Bubble(pos)
+    all_sprites.add(bubble)
 def place_pin(pos):
     pin=Pin(pos)
     all_sprites.add(pin)
@@ -82,6 +85,9 @@ def create_level():
         elif type(Star((0,0)))==type(sprite):
             x,y=sprite.rect.center
             file.write('Star ('+str(x)+','+str(y)+')\n')
+        elif type(Bubble((0,0)))==type(sprite):
+            x,y=sprite.rect.center
+            file.write('Bubble ('+str(x)+','+str(y)+')\n')
         elif type(Candy((0,0)))==type(sprite):
             x,y=sprite.rect.center
             s='Candy ('+str(x)+','+str(y)+') '
@@ -115,11 +121,11 @@ screen=pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Классная игра амням и пророк санбой солнецебой певец')
 all_sprites=pygame.sprite.Group()
 buttons=pygame.sprite.Group()
-available_objects=['Candy','Amnyam','Star','Pin']
+available_objects=['Candy','Amnyam','Star','Pin','Bubble']
 for i in range(len(available_objects)):
     button=PlaceButton(available_objects[i],(50+101*i,650))
     buttons.add(button)
-background=pygame.image.load('images/background.png').convert()
+background=pygame.image.load('images/level_background.png').convert()
 background=pygame.transform.scale(background, ((WIDTH,HEIGHT)))
 clock=pygame.time.Clock()
 placing=None

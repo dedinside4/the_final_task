@@ -10,7 +10,6 @@ class Candy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         i=random.randint(1,4)
         self.image = pygame.transform.scale(pygame.image.load(f'images/candy{i}.png'), ((55, 55)))
-        #self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
         self.ropes=[]
@@ -136,8 +135,7 @@ class Rope:
 class Amnyam(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('images/amnum.png'), ((50,50)))
-        self.image.set_colorkey((255,255,255))
+        self.image = pygame.transform.scale(pygame.image.load('images/amnyam.png'), ((150,150)))
         self.rect=self.image.get_rect()
         self.rect.center=pos
 class Star(pygame.sprite.Sprite):
@@ -168,4 +166,7 @@ class Bubble(pygame.sprite.Sprite):
         self.rect.center=self.candy.center
         candy.g=np.array([0,0])
     def update(self):
-        self.candy.velocity
+        try:
+            self.candy.velocity=[0,-0.8]
+        except:
+            pass

@@ -1,6 +1,7 @@
 import pygame
 from objects import *
 def read_level(name):
+    bubbles=pygame.sprite.Group()
     candies=pygame.sprite.Group()
     amnyams=pygame.sprite.Group()
     stars=pygame.sprite.Group()
@@ -21,6 +22,9 @@ def read_level(name):
             elif object_type == "Amnyam":
                 amnyam=parse_amnyam_parameters(line)
                 amnyams.add(amnyam)
+            elif object_type == "Bubble":
+                bubble=parse_bubble_parameters(line)
+                bubbles.add(bubble)
     return candies,pins,stars,amnyams
 def parse_star_parameters(line):
     a=line.split()
@@ -30,6 +34,10 @@ def parse_amnyam_parameters(line):
     a=line.split()
     pos=eval(a[1])
     return Amnyam(pos)
+def parse_bubble_parameters(line):
+    a=line.split()
+    pos=eval(a[1])
+    return Bubble(pos)
 def parse_candy_parameters(line):
     a=line.split()
     candy=Candy(eval(a[1]))
