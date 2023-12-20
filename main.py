@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from scipy.optimize import root_scalar
 from objects import *
+from level_reader import *
 def draw_text(text,c,size,color=(0,0,0)):
     font=pygame.font.Font(pygame.font.match_font('arial'),size)
     text_surface=font.render(text,True,color)
@@ -16,26 +17,9 @@ pygame.init()
 running=True
 screen=pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('Это и есть амням')
-candies=pygame.sprite.Group()
-pins=pygame.sprite.Group()
-stars=pygame.sprite.Group()
-amnyams=pygame.sprite.Group()
-background=pygame.image.load('background.png').convert()
+candies,pins,stars,amnyams=read_level('level_6.txt')
+background=pygame.image.load('images/background.png').convert()
 background=pygame.transform.scale(background, ((WIDTH,HEIGHT)))
-candy=Candy((WIDTH/2-30,HEIGHT/2-40))
-pin=candy.bind((WIDTH/2+70,HEIGHT/2+70),280)
-pins.add(pin)
-pin=candy.bind((WIDTH/2+100,HEIGHT/2+40),170)
-pins.add(pin)
-candies.add(candy)
-amnyam=Amnyam((WIDTH/2+190,HEIGHT/2+240))
-amnyams.add(amnyam)
-star=Star(((WIDTH/2+150,HEIGHT/2+210)))
-stars.add(star)
-star=Star(((WIDTH/2+100,HEIGHT/2+220)))
-stars.add(star)
-star=Star(((WIDTH/2+10,HEIGHT/2+170)))
-stars.add(star)
 clock=pygame.time.Clock()
 Roukanken=False
 last_pos=(None,None)

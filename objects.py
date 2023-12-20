@@ -1,14 +1,16 @@
 import pygame
 import numpy as np
+import random
 from scipy.optimize import root_scalar
 SCALE=0.01
 G=np.array([0,9.8])
 FPS=500
 class Candy(pygame.sprite.Sprite):
     def __init__(self,pos):
-        pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('images/candy.png'), ((25, 25)))
-        self.image.set_colorkey((255,255,255))
+        pygame.sprite.Sprite.__init__(self)
+        i=random.randint(1,4)
+        self.image = pygame.transform.scale(pygame.image.load(f'images/candy{i}.png'), ((55, 55)))
+        #self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
         self.ropes=[]
