@@ -3,7 +3,6 @@ import numpy as np
 import random
 import time
 from scipy.optimize import root_scalar
-from model import *
 
 class Candy(pygame.sprite.Sprite):
     def __init__(self, x, y):
