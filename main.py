@@ -43,7 +43,7 @@ while running:
             Roukanken=False
             last_pos=(None,None)
     candies.update()
-    pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(80/100))
+    pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(60/100))
     all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
     screen.blit(background,(0,0))
     for candy in candies.sprites():

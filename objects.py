@@ -58,10 +58,26 @@ class Rope:
         beheaded=False
         candy_end=self.candy.pos
         r=candy_end-self.static_end
+        x=r[0]
         x1-=self.static_end[0]
         x2-=self.static_end[0]
         y1-=self.static_end[1]
         y2-=self.static_end[1]
+        try:
+            k=(x1-x2)/(y1-y2)
+        except:
+            k=random.choice((-1,1))*1000000
+        b=y2-k*x2
+        if x1<min(x,0):
+            x1=min(x,0)
+        elif x1>max(x,0):
+            x1=max(x,0)
+        if x2<min(x,0):
+            x2=min(x,0)
+        elif x2>max(x,0):
+            x2=max(x,0)
+        y1=x1*k+b
+        y2=x2*k+b
         if self.length-np.linalg.norm(r)<=self.length*0.001:
             k=r[1]/r[0]
             if (k*x1-y1)*(k*x2-y2)<0:
