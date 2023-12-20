@@ -13,12 +13,13 @@ class Candy(pygame.sprite.Sprite):
         self.rect.center=pos
         self.ropes=[]
         self.mass=1
+        self.g=np.array([0,9.8])
         self.viscosity=0.09
         self.velocity=np.array([0,0])
         self.pos=np.array(self.rect.center)*SCALE
     def update(self):
         time=1/FPS
-        force=self.mass*G
+        force=self.mass*self.g
         for rope in self.ropes:
             f=rope.take_force()
             f_norm=np.linalg.norm(f)
@@ -117,14 +118,14 @@ class Rope:
 class Amnyam(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('amnyam.png'), ((50,50)))
+        self.image = pygame.transform.scale(pygame.image.load('images/amnum.png'), ((50,50)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
 class Star(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('star.png'), ((18,18)))
+        self.image = pygame.transform.scale(pygame.image.load('images/star.png'), ((18,18)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
@@ -136,3 +137,17 @@ class Pin(pygame.sprite.Sprite):
         self.rect=self.image.get_rect()
         self.rect.center=pos
         self.bound=None
+class Bubble(pygame.sprite.Sprite):
+    def __init__(self,pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load('images/bubble.png'), ((30, 30)))
+        self.image.set_colorkey((255,255,255))
+        self.rect=self.image.get_rect()
+        self.rect.center=pos
+        self.candy=None
+    def catch(self,candy):
+        self.candy=candy
+        self.rect.center=self.candy.center
+        candy.g=np.array([0,0])
+    def update(self):
+        self.candy.velocity

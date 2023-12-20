@@ -1,5 +1,6 @@
 import pygame
 import re
+import os
 from objects import *
 class PlaceButton(pygame.sprite.Sprite):
     def __init__(self,object_name,pos):
@@ -65,7 +66,34 @@ def draw_text(text,c,size,color=(0,0,0)):
     text_rect=text_surface.get_rect()
     text_rect.center=c
     screen.blit(text_surface,text_rect) 
-
+def create_level():
+    files=[]
+    for filename in os.listdir('levels'):
+        files.append(filename)
+    i=1
+    while files.count(f'level_{i}.txt')>0:
+        i+=1
+    name=f'levels\level_{i}.txt'
+    file=open(name,'w')
+    for sprite in all_sprites.sprites():
+        if type(Amnyam((0,0)))==type(sprite):
+            x,y=sprite.rect.center
+            file.write('Amnyam ('+str(x)+','+str(y)+')\n')
+        elif type(Star((0,0)))==type(sprite):
+            x,y=sprite.rect.center
+            file.write('Star ('+str(x)+','+str(y)+')\n')
+        elif type(Candy((0,0)))==type(sprite):
+            x,y=sprite.rect.center
+            s='Candy ('+str(x)+','+str(y)+') '
+            for rope in sprite.ropes:
+                x,y=rope.one_end
+                l=int(rope.length/SCALE)+1
+                s+='('+str(x)+','+str(y)+') '+str(l)+' '
+            file.write(s+'\n')
+    file.close()
+    print('saved')
+            
+            
 
 
 
@@ -91,7 +119,7 @@ available_objects=['Candy','Amnyam','Star','Pin']
 for i in range(len(available_objects)):
     button=PlaceButton(available_objects[i],(50+101*i,650))
     buttons.add(button)
-background=pygame.image.load('background.png').convert()
+background=pygame.image.load('images/background.png').convert()
 background=pygame.transform.scale(background, ((WIDTH,HEIGHT)))
 clock=pygame.time.Clock()
 placing=None
@@ -117,6 +145,8 @@ while running:
                             candy,rope=sprite.bound
                             candy.ropes.remove(rope)
                         sprite.kill()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            create_level()
     screen.blit(background,(0,0))
     for candy in all_sprites.sprites():
         try:
