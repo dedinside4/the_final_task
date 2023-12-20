@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 from utils import change_state  # Import the change_state function
+
 pygame.init()
 
 screen_width = 1360
@@ -28,7 +29,7 @@ class Button:
 
 # Создание кнопок
 start_button = Button(screen_width // 2, 200, "images/play_pixian_ai.png", scale_factor=0.3, action=lambda: change_state())
-character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: change_state("character_selection"))
+character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: change_state("shop.py"))
 exit_button = Button(screen_width // 2, 400, "images/exit_pixian_ai.png", scale_factor=0.3, action=sys.exit)
 
 buttons = [start_button, character_button, exit_button]
@@ -71,4 +72,3 @@ while True:
     # Переключение между экранами
     if current_state.endswith(".py"):
         os.system("python " + current_state)
-
