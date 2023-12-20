@@ -7,7 +7,7 @@ FPS=500
 class Candy(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('candy.png'), ((25,25)))
+        self.image = pygame.transform.scale(pygame.image.load('images/candy.png'), ((25, 25)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
@@ -131,7 +131,7 @@ class Star(pygame.sprite.Sprite):
 class Pin(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('pin.png'), ((10,10)))
+        self.image = pygame.transform.scale(pygame.image.load('images/pin.png'), ((10, 10)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos
