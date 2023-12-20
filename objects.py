@@ -135,13 +135,13 @@ class Rope:
 class Amnyam(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('images/amnyam.png'), ((150,150)))
+        self.image = pygame.transform.scale(pygame.image.load('images/amnyam.png'), ((130,130)))
         self.rect=self.image.get_rect()
         self.rect.center=pos
 class Star(pygame.sprite.Sprite):
     def __init__(self,pos):
         pygame.sprite.Sprite.__init__(self)                                    
-        self.image = pygame.transform.scale(pygame.image.load('images/star.png'), ((18,18)))
+        self.image = pygame.transform.scale(pygame.image.load('images/star.png'), ((30,30)))
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()
         self.rect.center=pos

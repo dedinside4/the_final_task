@@ -9,12 +9,17 @@ def draw_text(text,c,size,color=(0,0,0)):
     text_rect=text_surface.get_rect()
     text_rect.center=c
     screen.blit(text_surface,text_rect)
+def draw_collected(screen,candies_eaten, all_stars):
+    draw_text(str(all_stars),(10,10),14)
+    screen.blit()
+    draw_text(str(candies_eaten),(10,30),14)
 def start_level(number):
     global running
     candies,pins,stars,amnyams,bubbles=read_level(f'level_{number}.txt')
     Roukanken=False
     last_pos=(None,None)
     all_stars=0
+    candies_eaten=0
     ongoing=True
     while ongoing:
         clock.tick(FPS)
@@ -39,12 +44,14 @@ def start_level(number):
                 last_pos=(None,None)
         bubbles.update()
         candies.update()
-        pygame.sprite.groupcollide(amnyams, candies, False, True, collided = pygame.sprite.collide_rect_ratio(60/100))
+        candies_eaten+=len(pygame.sprite.groupcollide(candies, amnyams, True, False, collided = pygame.sprite.collide_rect_ratio(60/100)))
         catches=pygame.sprite.groupcollide(bubbles, candies, False, False)
         for bubble in catches:
             for candy in catches[bubble]:
                 bubble.catch(candy)
         all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
+        if len(candies.sprites())==0:
+            ongoing=False
         screen.blit(level_background,(0,0))
         for candy in candies.sprites():
             if candy.rect.centerx<0 or candy.rect.centerx>WIDTH or candy.rect.centery<0 or candy.rect.centery>HEIGHT:
@@ -56,7 +63,9 @@ def start_level(number):
         bubbles.draw(screen)
         pins.draw(screen)
         amnyams.draw(screen)
+        #draw_collected(screen,candies_eaten, all_stars)
         pygame.display.flip()
+    return candies_eaten, all_stars
 SCALE=0.01
 G=np.array([0,9.8])
 FPS=500
