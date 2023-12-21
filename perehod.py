@@ -3,98 +3,69 @@ import sys
 import os
 import subprocess
 from utils import change_state
-
-pygame.init()
-
-# Определение размеров окна
-screen_width = 800
-screen_height = 600
-
-# Инициализация переменных состояния
-current_state = "initial_state"  # Replace "initial_state" with the actual starting state of your program
-current_level = 1  # Replace 1 with the actual starting level of your program
-
-# Создание объекта для отображения
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Листание картинок")
-
-# Загрузка изображений
-images = ["urovenperehod.png", "levl2_pixian_ai.png", "levl3_pixian_ai.png"]
-current_image_index = 0
-
-# Загрузка изображения для фона
-background_image = pygame.image.load(os.path.join("images", images[current_image_index]))
-background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
-
-# Шрифт для текста на кнопках
-font = pygame.font.Font(None, 36)
-
-# Класс для кнопок
-class Button:
-    def __init__(self, x, y, image_path, scale_factor=0.5, action=None):
-        original_image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(original_image, (int(original_image.get_width() * scale_factor),
-                                                             int(original_image.get_height() * scale_factor)))
-        self.rect = self.image.get_rect(center=(x, y))
-        self.action = action
-
-    def draw(self, screen):
-        screen.blit(self.image, self.rect.topleft)
-
 # Создание кнопок
 def next_image():
-    global current_image_index
+    global current_image_index,images,WIDTH,HEIGHT
     current_image_index = (current_image_index + 1) % len(images)
     update_background()
 
 def previous_image():
-    global current_image_index
+    global current_image_index,images,WIDTH,HEIGHT
     current_image_index = (current_image_index - 1) % len(images)
     update_background()
 
 def update_background():
-    global background_image
+    global background_image,images,WIDTH,HEIGHT
+    background_image = pygame.image.load(os.path.join("images", images[current_image_index]))
+    background_image = pygame.transform.scale(background_image, (WIDTH,HEIGHT))
+
+def start_game():
+    global current_image_index,chosen_level,running
+    chosen_level=current_image_index+1
+    running=False
+def select_level(screen,Button,screen_width,screen_height):
+    global current_image_index,images,WIDTH,HEIGHT,background_image,running,chosen_level
+# Загрузка изображений
+    images = ["urovenperehod.png", "levl2_pixian_ai.png", "levl3_pixian_ai.png"]
+    current_image_index = 0
+    WIDTH,HEIGHT=screen_width,screen_height
+    # Загрузка изображения для фона
     background_image = pygame.image.load(os.path.join("images", images[current_image_index]))
     background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 
-# Modify the start_game1 function to run main.py using subprocess
-def start_game1():
-    global current_state, current_level
+    # Шрифт для текста на кнопках
+    font = pygame.font.Font(None, 36)
 
-    # Change the state to main.py
-    current_state, current_level = change_state(current_state, current_level, "main.py")
+    next_button = Button(screen_width - 50, screen_height // 2, "images/right_pixian_ai.png", scale_factor=0.1, action=next_image)
+    previous_button = Button(50, screen_height // 2, "images/left_pixian_ai.png", scale_factor=0.1, action=previous_image)
+    start_game_button = Button(screen_width // 2, screen_height - 50, "images/play_pixian_ai.png", scale_factor=0.2, action=start_game)
 
-    # Run main.py using subprocess
-    subprocess.run(["python", "main.py"])
+    buttons = [next_button, previous_button, start_game_button]
 
-next_button = Button(screen_width - 50, screen_height // 2, "images/right_pixian_ai.png", scale_factor=0.1, action=next_image)
-previous_button = Button(50, screen_height // 2, "images/left_pixian_ai.png", scale_factor=0.1, action=previous_image)
-start_game_button = Button(screen_width // 2, screen_height - 50, "images/play_pixian_ai.png", scale_factor=0.2, action=start_game1)
+    # Основной цикл игры
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running=False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for button in buttons:
+                    if button.rect.collidepoint(event.pos):
+                        if button.action:
+                            button.action()
 
-buttons = [next_button, previous_button, start_game_button]
+        # Отрисовка фона
+        screen.blit(background_image, (0, 0))
 
-# Основной цикл игры
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            for button in buttons:
-                if button.rect.collidepoint(event.pos):
-                    if button.action:
-                        button.action()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                next_image()
-            elif event.key == pygame.K_LEFT:
-                previous_image()
+        # Отрисовка кнопок
+        for button in buttons:
+            button.draw(screen)
 
-    # Отрисовка фона
-    screen.blit(background_image, (0, 0))
-
-    # Отрисовка кнопок
-    for button in buttons:
-        button.draw(screen)
-
-    # Обновление экрана
-    pygame.display.flip()
+        # Обновление экрана
+        pygame.display.flip()
+    return chosen_level
+current_image_index=0
+images=None
+WIDTH,HEIGHT=0,0
+background_image=None
+running=True
+chosen_level=None
