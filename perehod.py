@@ -1,13 +1,18 @@
 import pygame
 import sys
 import os
-from utils import change_state  # Import the change_state function
+import subprocess
+from utils import change_state
 
 pygame.init()
 
 # Определение размеров окна
 screen_width = 800
 screen_height = 600
+
+# Инициализация переменных состояния
+current_state = "initial_state"  # Replace "initial_state" with the actual starting state of your program
+current_level = 1  # Replace 1 with the actual starting level of your program
 
 # Создание объекта для отображения
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -52,9 +57,15 @@ def update_background():
     background_image = pygame.image.load(os.path.join("images", images[current_image_index]))
     background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
 
+# Modify the start_game1 function to run main.py using subprocess
 def start_game1():
+    global current_state, current_level
+
     # Change the state to main.py
-    change_state("main.py")
+    current_state, current_level = change_state(current_state, current_level, "main.py")
+
+    # Run main.py using subprocess
+    subprocess.run(["python", "main.py"])
 
 next_button = Button(screen_width - 50, screen_height // 2, "images/right_pixian_ai.png", scale_factor=0.1, action=next_image)
 previous_button = Button(50, screen_height // 2, "images/left_pixian_ai.png", scale_factor=0.1, action=previous_image)
