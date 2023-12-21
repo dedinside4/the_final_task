@@ -29,7 +29,7 @@ class Button:
 
 # Создание кнопок
 start_button = Button(screen_width // 2, 200, "images/play_pixian_ai.png", scale_factor=0.3, action=lambda: subprocess.run(["python", "perehod.py"]) or sys.exit())
-character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: change_state("shop.py"))
+character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: subprocess.run(["python", "shop.py"]) or sys.exit())
 exit_button = Button(screen_width // 2, 400, "images/exit_pixian_ai.png", scale_factor=0.3, action=lambda: pygame.quit() or sys.exit())
 
 buttons = [start_button, character_button, exit_button]
