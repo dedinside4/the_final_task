@@ -1,5 +1,6 @@
 import pygame
 import sys
+import subprocess
 
 pygame.init()
 
@@ -42,6 +43,7 @@ button_height = 180
 button_x = 325
 button_y = 395
 
+
 play_button_image = pygame.image.load("images/igrat_pixian_ai.png")
 play_button_image = pygame.transform.scale(play_button_image, (button_width, button_height))
 play_button_rect = play_button_image.get_rect(topleft=(button_x, button_y))
@@ -58,8 +60,8 @@ while True:
                         file.write(selected_costume.image_filename)
 
             if play_button_rect.collidepoint(event.pos) and selected_costume:
-                command = f"python fisi.py --costume {selected_costume.image_filename}"
-                sys.exit()
+                # Запустить файл perehod.py
+                subprocess.run(["python", "perehod.py", f"--costume={selected_costume.image_filename}"])
 
     screen.blit(background_image, (0, 0))
 
