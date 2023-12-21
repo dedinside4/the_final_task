@@ -1,8 +1,6 @@
 import pygame
 import sys
 import os
-import subprocess
-from utils import change_state
 # Создание кнопок
 def next_image():
     global current_image_index,images,WIDTH,HEIGHT
@@ -25,8 +23,13 @@ def start_game():
     running=False
 def select_level(screen,Button,screen_width,screen_height):
     global current_image_index,images,WIDTH,HEIGHT,background_image,running,chosen_level
+    current_image_index=0
+    images=None
+    background_image=None
+    running=True
+    chosen_level=None
 # Загрузка изображений
-    images = ["urovenperehod.png", "levl2_pixian_ai.png", "levl3_pixian_ai.png"]
+    images = ["level_1.jpg", "level_2.jpg", "level_3.jpg", "level_4.jpg", "level_5.jpg", "level_6.jpg", "level_7.jpg"]
     current_image_index = 0
     WIDTH,HEIGHT=screen_width,screen_height
     # Загрузка изображения для фона

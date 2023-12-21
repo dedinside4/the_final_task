@@ -28,8 +28,9 @@ def draw_collected(screen,candies_eaten, all_stars):
 def start_level(number,skin):
     global running
     candies,pins,stars,amnyams,bubbles=read_level(f'level_{number}.txt')
-    for candy in candies.sprites():
-        change_accordingly(skin,candy)
+    if not (skin is None):
+        for candy in candies.sprites():
+            change_accordingly(skin,candy)
     Roukanken=False
     last_pos=(None,None)
     all_stars=0
@@ -58,12 +59,12 @@ def start_level(number,skin):
                 last_pos=(None,None)
         bubbles.update()
         candies.update()
-        candies_eaten+=len(pygame.sprite.groupcollide(candies, amnyams, True, False, collided = pygame.sprite.collide_rect_ratio(60/100)))
+        candies_eaten+=len(pygame.sprite.groupcollide(candies, amnyams, True, False, collided = pygame.sprite.collide_rect_ratio(50/100)))
         catches=pygame.sprite.groupcollide(bubbles, candies, False, False)
         for bubble in catches:
             for candy in catches[bubble]:
                 bubble.catch(candy)
-        all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False))
+        all_stars+=len(pygame.sprite.groupcollide(stars, candies, True, False, collided = pygame.sprite.collide_circle_ratio(45/100)))
         if len(candies.sprites())==0:
             ongoing=False
         screen.blit(level_background,(0,0))
