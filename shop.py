@@ -18,6 +18,7 @@ class Costume:
         self.image = pygame.transform.scale(self.image, (width, height))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
+        self.image_filename = image_path.split("/")[-1]
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
@@ -53,13 +54,13 @@ while True:
             for costume in costumes:
                 if costume.rect.collidepoint(event.pos):
                     selected_costume = costume
+                    with open("selected_costume.txt", "w") as file:
+                        file.write(selected_costume.image_filename)
+
             if play_button_rect.collidepoint(event.pos) and selected_costume:
-                # Redirect to perehod.py
-                with open("selected_costume.txt", "w") as file:
-                    file.write(selected_costume.name)
+                command = f"python fisi.py --costume {selected_costume.image_filename}"
                 sys.exit()
 
-    # Draw the background image
     screen.blit(background_image, (0, 0))
 
     for costume in costumes:
@@ -68,7 +69,6 @@ while True:
     if selected_costume:
         pygame.draw.rect(screen, (0, 255, 0), selected_costume.rect, 2)
 
-    # Draw the play button
     screen.blit(play_button_image, play_button_rect.topleft)
 
     pygame.display.flip()

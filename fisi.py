@@ -3,11 +3,31 @@ import numpy as np
 import random
 import time
 from scipy.optimize import root_scalar
+import os
+import sys
+
+# Initialize pygame and set display mode
+pygame.init()
+WIDTH, HEIGHT = 600, 700
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+class Costume:
+    def __init__(self, name, image_path, width=100, height=100, x=0, y=0):
+        self.name = name
+        self.image = pygame.image.load(image_path)
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        filename_with_extension = os.path.basename(image_path)
+        self.image_filename = os.path.splitext(filename_with_extension)[0] + ".png"  # Add ".png" to the filename
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect.topleft)
 
 class Candy(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, costume_image):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(candy_img, ((25, 25)))
+        self.image = pygame.transform.scale(costume_image, (25, 25))
         self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -46,7 +66,6 @@ class Candy(pygame.sprite.Sprite):
         x, y = self.rect.center
         pygame.draw.line(screen, (255, 0, 0), self.rect.center, (x + force[0] / SCALE, y + force[1] / SCALE), width=3)
         pygame.draw.line(screen, (0, 0, 255), self.rect.center, (x + self.velocity[0] / SCALE, y + self.velocity[1] / SCALE), width=3)
-
 
 class Rope:
     def __init__(self, static_end, length, candy):
@@ -129,14 +148,12 @@ class Rope:
         s /= 4 * a
         return s
 
-
 class Pin(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(candy_img, ((10, 10)))
+        self.image = pygame.transform.scale(candy_img, (10, 10))
         self.rect = self.image.get_rect()
         self.rect.center = pos
-
 
 def draw_text(text, c, size, color=(0, 0, 0)):
     font = pygame.font.Font(pygame.font.match_font('arial'), size)
@@ -145,21 +162,34 @@ def draw_text(text, c, size, color=(0, 0, 0)):
     text_rect.center = c
     screen.blit(text_surface, text_rect)
 
+def read_selected_costume():
+    selected_costume_path = "selected_costume.txt"
+    if os.path.exists(selected_costume_path):
+        with open(selected_costume_path, "r") as file:
+            return file.read().strip()
+    return "candy"  # Default costume if file not found
+
+def save_selected_costume(filename):
+    base_filename = os.path.splitext(filename)[0]
+    with open("selected_costume.txt", "w") as file:
+        file.write(base_filename)
+
+# Read selected costume from file
+selected_costume = read_selected_costume()
+costume_img_path = f'images/{selected_costume}.png'
+costume_img = pygame.image.load(costume_img_path).convert()
+
+# Scale the candy_img to match the pin size
+candy_img = pygame.transform.scale(candy_img, (10, 10))
+
 SCALE = 0.01
 G = np.array([0, 9.8])
 FPS = 500
-WIDTH, HEIGHT = 600, 700
-pygame.init()
-running = True
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Это и есть амням')
 candies = pygame.sprite.Group()
 pins = pygame.sprite.Group()
-pin_img = pygame.image.load('images/pin.png')
-candy_img = pygame.image.load('images/candy.png').convert()
 background = pygame.image.load('images/background.png').convert()
 background = pygame.transform.scale(background, ((WIDTH, HEIGHT)))
-candy = Candy(WIDTH / 2 - 30, HEIGHT / 2 - 40)
+candy = Candy(WIDTH / 2 - 30, HEIGHT / 2 - 40, costume_img)
 candy.bind((WIDTH / 2 + 70, HEIGHT / 2 + 70), 280)
 candy.bind((WIDTH / 2 + 100, HEIGHT / 2 + 40), 170)
 candies.add(candy)
@@ -167,23 +197,24 @@ clock = pygame.time.Clock()
 Roukanken = False
 last_pos = (None, None)
 
-while running:
-    clock.tick(FPS)
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-        if Roukanken:
-            x, y = pygame.mouse.get_pos()
-            x1, y1 = last_pos
-            if not (x1 is None):
-                for rope in candy.ropes:
-                    rope.CUT_THROUGH_THE_ROPE(x1 * SCALE, y1 * SCALE, x * SCALE, y * SCALE)
-            last_pos = x, y
-        if event.type == pygame.MOUSEBUTTONDOWN:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             Roukanken = True
-        if event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP:
             Roukanken = False
             last_pos = (None, None)
+
+    if Roukanken:
+        x, y = pygame.mouse.get_pos()
+        x1, y1 = last_pos
+        if not (x1 is None):
+            for rope in candy.ropes:
+                rope.CUT_THROUGH_THE_ROPE(x1 * SCALE, y1 * SCALE, x * SCALE, y * SCALE)
+        last_pos = x, y
 
     candies.update()
     screen.blit(background, (0, 0))
@@ -192,5 +223,4 @@ while running:
         rope.draw()
     pins.draw(screen)
     pygame.display.flip()
-
-pygame.quit()
+    clock.tick(FPS)

@@ -28,7 +28,7 @@ class Button:
         screen.blit(self.image, self.rect.topleft)
 
 # Создание кнопок
-start_button = Button(screen_width // 2, 200, "images/play_pixian_ai.png", scale_factor=0.3, action=lambda: change_state())
+start_button = Button(screen_width // 2, 200, "images/play_pixian_ai.png", scale_factor=0.3, action=lambda: subprocess.run(["python", "perehod.py"]) or sys.exit())
 character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: change_state("shop.py"))
 exit_button = Button(screen_width // 2, 400, "images/exit_pixian_ai.png", scale_factor=0.3, action=lambda: pygame.quit() or sys.exit())
 
@@ -69,7 +69,3 @@ while True:
 
     # Обновление экрана
     pygame.display.flip()
-
-    # Переключение между экранами
-    if current_state.endswith(".py"):
-        subprocess.run(["python", current_state])  # Use subprocess to run the Python script
