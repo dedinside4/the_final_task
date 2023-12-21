@@ -1,6 +1,6 @@
 import pygame
 import sys
-import os
+import subprocess  # Import subprocess module
 from utils import change_state  # Import the change_state function
 
 pygame.init()
@@ -30,7 +30,7 @@ class Button:
 # Создание кнопок
 start_button = Button(screen_width // 2, 200, "images/play_pixian_ai.png", scale_factor=0.3, action=lambda: change_state())
 character_button = Button(screen_width // 2, 300, "images/om_nom_pixian_ai.png", scale_factor=0.3, action=lambda: change_state("shop.py"))
-exit_button = Button(screen_width // 2, 400, "images/exit_pixian_ai.png", scale_factor=0.3, action=sys.exit)
+exit_button = Button(screen_width // 2, 400, "images/exit_pixian_ai.png", scale_factor=0.3, action=lambda: pygame.quit() or sys.exit())
 
 buttons = [start_button, character_button, exit_button]
 
@@ -52,6 +52,7 @@ def change_state(new_state=None):
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             for button in buttons:
@@ -71,4 +72,4 @@ while True:
 
     # Переключение между экранами
     if current_state.endswith(".py"):
-        os.system("python " + current_state)
+        subprocess.run(["python", current_state])  # Use subprocess to run the Python script
